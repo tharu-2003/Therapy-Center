@@ -32,7 +32,7 @@
                 </Label>
                 <TextField fx:id="txtProgramName" layoutX="234.0" layoutY="179.0" prefHeight="25.0" prefWidth="218.0" />
 
-                <Label layoutX="69.0" layoutY="230.0" text="Duration (minutes)">
+                <Label layoutX="69.0" layoutY="230.0" text="Duration ">
                     <font><Font name="System Bold" size="15.0" /></font>
                 </Label>
                 <TextField fx:id="txtDuration" layoutX="234.0" layoutY="230.0" prefHeight="25.0" prefWidth="218.0" />

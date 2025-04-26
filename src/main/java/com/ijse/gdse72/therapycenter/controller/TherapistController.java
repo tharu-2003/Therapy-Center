@@ -2,7 +2,6 @@ package com.ijse.gdse72.therapycenter.controller;
 
 import com.ijse.gdse72.therapycenter.bo.BOFactory;
 import com.ijse.gdse72.therapycenter.bo.custom.TherapistBO;
-import com.ijse.gdse72.therapycenter.bo.custom.impl.TherapistBOImpl;
 import com.ijse.gdse72.therapycenter.dto.TherapistDTO;
 import com.ijse.gdse72.therapycenter.dto.tm.TherapistTM;
 import javafx.collections.FXCollections;
@@ -20,80 +19,41 @@ import java.util.Optional;
 public class TherapistController {
 
     @FXML
-    private Button btnDelete;
-
+    private Button btnDelete, btnRefresh, btnSave, btnUpdate;
     @FXML
-    private Button btnRefresh;
-
+    private ComboBox<String> cmbAssignedProgram, cmbAvailability, cmbSpecialization;
     @FXML
-    private Button btnSave;
-
-    @FXML
-    private Button btnUpdate;
-
-    @FXML
-    private ComboBox<String> cmbAssignedProgram;
-
-    @FXML
-    private ComboBox<String> cmbAvailability;
-
-    @FXML
-    private ComboBox<String> cmbSpecialization;
-
-    @FXML
-    private TableColumn<TherapistTM , String> colAssignedProgram;
-
+    private TableColumn<TherapistTM , String> colAssignedProgram, colName, colSpecialization, colStatus, colTherapistId;
     @FXML
     private TableColumn<TherapistTM , Integer> colContact;
-
-    @FXML
-    private TableColumn<TherapistTM , String> colName;
-
-    @FXML
-    private TableColumn<TherapistTM , String> colSpecialization;
-
-    @FXML
-    private TableColumn<TherapistTM , String> colStatus;
-
-    @FXML
-    private TableColumn<TherapistTM , String> colTherapistId;
-
     @FXML
     private TableView<TherapistTM> customerTable;
-
     @FXML
     private ImageView imgSearch;
-
     @FXML
-    private TextField txtTherapistContact;
-
-    @FXML
-    private TextField txtTherapistGmail;
-
-    @FXML
-    private TextField txtTherapistId;
-
-    @FXML
-    private TextField txtTherapistName;
+    private TextField txtTherapistContact, txtTherapistGmail, txtTherapistId, txtTherapistName;
 
     private final TherapistBO therapistBO = (TherapistBO) BOFactory.getInstance().getBO(BOFactory.BOType.THERAPIST);
 
+    // Regex patterns
+    private static final String ID_REGEX = "^T\\d{3}$";
+    private static final String NAME_REGEX = "^[A-Za-z ]{3,50}$";
+    private static final String CONTACT_REGEX = "^[0-9]{10}$";
+    private static final String GMAIL_REGEX = "^[a-zA-Z0-9._%+-]+@gmail\\.com$";
 
     public void initialize() {
         try {
             populateComboBoxes();
             loadTableData();
             visibleData();
-
             String nextTherapistId = therapistBO.getNextTherapistId();
             txtTherapistId.setText(nextTherapistId);
-
         } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, "Id Genaration Failed: " + e.getMessage()).show();
+            new Alert(Alert.AlertType.ERROR, "ID Generation Failed: " + e.getMessage()).show();
         }
     }
 
-    private void refrashPage() {
+    private void refreshPage() {
         txtTherapistId.clear();
         txtTherapistName.clear();
         txtTherapistGmail.clear();
@@ -107,17 +67,16 @@ public class TherapistController {
         ArrayList<TherapistDTO> therapistDTOS = therapistBO.getAllTherapist();
         ObservableList<TherapistTM> therapistTMS = FXCollections.observableArrayList();
 
-        for (TherapistDTO therapistDTO : therapistDTOS) {
-            TherapistTM therapistTM = new TherapistTM(
-                    therapistDTO.getTherapistId(),
-                    therapistDTO.getName(),
-                    therapistDTO.getSpecialization(),
-                    therapistDTO.getAvailability(),
-                    therapistDTO.getContactNumber(),
-                    therapistDTO.getAssignedProgram(),
-                    therapistDTO.getEmail()
-            );
-            therapistTMS.add(therapistTM);
+        for (TherapistDTO dto : therapistDTOS) {
+            therapistTMS.add(new TherapistTM(
+                    dto.getTherapistId(),
+                    dto.getName(),
+                    dto.getSpecialization(),
+                    dto.getAvailability(),
+                    dto.getContactNumber(),
+                    dto.getAssignedProgram(),
+                    dto.getEmail()
+            ));
         }
         customerTable.setItems(therapistTMS);
     }
@@ -129,77 +88,50 @@ public class TherapistController {
         colContact.setCellValueFactory(new PropertyValueFactory<>("contactNumber"));
         colStatus.setCellValueFactory(new PropertyValueFactory<>("availability"));
         colAssignedProgram.setCellValueFactory(new PropertyValueFactory<>("assignedProgram"));
-
     }
 
     public void populateComboBoxes() {
-        ObservableList<String> availability = FXCollections.observableArrayList(
-                "Available",
-                "Unavailable",
-                "On Leave",
-                "Busy"
-        );
-
-        cmbAvailability.setItems(availability);
-
-        ObservableList<String> programes = FXCollections.observableArrayList(
-                "Cognitive Behavioral Therapy", "Mindfulness-Based Stress Reduction" ,
-                "Dialectical Behavior Therapy" , "Group Therapy Sessions" , "Family Counseling"
-        );
-
-        cmbAssignedProgram.setItems(programes);
-
-        ObservableList<String> specialization = FXCollections.observableArrayList(
-                "Child Psychology",
-                "Depression & Anxiety",
-                "Addiction Recovery",
-                "Trauma Therapy",
-                "Relationship Counseling",
-                "PTSD Specialist"
-        );
-
-        cmbSpecialization.setItems(specialization);
+        cmbAvailability.setItems(FXCollections.observableArrayList("Available", "Unavailable", "On Leave", "Busy"));
+        cmbAssignedProgram.setItems(FXCollections.observableArrayList(
+                "Cognitive Behavioral Therapy", "Mindfulness-Based Stress Reduction",
+                "Dialectical Behavior Therapy", "Group Therapy Sessions", "Family Counseling"));
+        cmbSpecialization.setItems(FXCollections.observableArrayList(
+                "Child Psychology", "Depression & Anxiety", "Addiction Recovery",
+                "Trauma Therapy", "Relationship Counseling", "PTSD Specialist"));
     }
 
     @FXML
     void clickOnAction(MouseEvent event) {
-        TherapistTM selectedTherapist = customerTable.getSelectionModel().getSelectedItem();
-
-        if (selectedTherapist != null) {
-            txtTherapistId.setText(selectedTherapist.getTherapistId());
-            txtTherapistName.setText(selectedTherapist.getName());
-            cmbSpecialization.setValue(selectedTherapist.getSpecialization());
-            cmbAssignedProgram.setValue(selectedTherapist.getAssignedProgram());
-            cmbAvailability.setValue(selectedTherapist.getAvailability());
-            txtTherapistContact.setText(String.valueOf(selectedTherapist.getContactNumber()));
-            txtTherapistGmail.setText(selectedTherapist.getEmail());
+        TherapistTM selected = customerTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            txtTherapistId.setText(selected.getTherapistId());
+            txtTherapistName.setText(selected.getName());
+            cmbSpecialization.setValue(selected.getSpecialization());
+            cmbAssignedProgram.setValue(selected.getAssignedProgram());
+            cmbAvailability.setValue(selected.getAvailability());
+            txtTherapistContact.setText(String.valueOf(selected.getContactNumber()));
+            txtTherapistGmail.setText(selected.getEmail());
         }
     }
 
     @FXML
     void deleteOnAction(ActionEvent event) {
-        TherapistTM selectedTherapist = customerTable.getSelectionModel().getSelectedItem();
-
-        if (selectedTherapist != null) {
-            Alert confirmAlert = new Alert(Alert.AlertType.CONFIRMATION);
-            confirmAlert.setTitle("Confirm Deletion");
-            confirmAlert.setHeaderText(null);
-            confirmAlert.setContentText("Are you sure you want to delete Therapist : " + selectedTherapist.getTherapistId() + "?");
-
-            Optional<ButtonType> result = confirmAlert.showAndWait();
-            if (result.isPresent() && result.get() == ButtonType.OK) {
+        TherapistTM selected = customerTable.getSelectionModel().getSelectedItem();
+        if (selected != null) {
+            Alert confirm = new Alert(Alert.AlertType.CONFIRMATION,
+                    "Are you sure you want to delete Therapist : " + selected.getTherapistId() + "?",
+                    ButtonType.YES, ButtonType.NO);
+            Optional<ButtonType> result = confirm.showAndWait();
+            if (result.isPresent() && result.get() == ButtonType.YES) {
                 try {
-                    boolean isDeleted = therapistBO.deleteTherapist(selectedTherapist.getTherapistId());
-
-                    if (isDeleted) {
+                    if (therapistBO.deleteTherapist(selected.getTherapistId())) {
                         new Alert(Alert.AlertType.INFORMATION, "Therapist deleted successfully!").show();
                         loadTableData();
-                        refrashPage();
+                        refreshPage();
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Failed to delete the Therapist!").show();
                     }
                 } catch (Exception e) {
-                    e.printStackTrace();
                     new Alert(Alert.AlertType.ERROR, "Database error: " + e.getMessage()).show();
                 }
             }
@@ -210,121 +142,115 @@ public class TherapistController {
 
     @FXML
     void refreshOnAction(ActionEvent event) {
-        refrashPage();
+        refreshPage();
     }
 
     @FXML
     void saveOnAction(ActionEvent event) {
         try {
-            String therapistId = txtTherapistId.getText();
-            String therapistName = txtTherapistName.getText();
-            String specialization = cmbSpecialization.getValue();
-            String availability = cmbAvailability.getValue();
-            int contact = Integer.parseInt(txtTherapistContact.getText());
-            String program = cmbAssignedProgram.getValue();
-            String email = txtTherapistGmail.getText();
+            if (!validateInputs()) return;
 
-            if (!therapistId.isEmpty() && !therapistName.isEmpty() && !email.isEmpty() && specialization != null && program != null && availability != null && contact > 0) {
+            TherapistDTO dto = new TherapistDTO(
+                    txtTherapistId.getText(),
+                    txtTherapistName.getText(),
+                    cmbSpecialization.getValue(),
+                    cmbAvailability.getValue(),
+                    Integer.parseInt(txtTherapistContact.getText()),
+                    cmbAssignedProgram.getValue(),
+                    txtTherapistGmail.getText()
+            );
 
-                TherapistDTO therapistDTO = new TherapistDTO(
-                        therapistId,
-                        therapistName,
-                        specialization,
-                        availability,
-                        contact,
-                        program,
-                        email
-                );
-
-                boolean isSaved = therapistBO.saveTherapist(therapistDTO);
-
-                if (isSaved) {
-                    new Alert(Alert.AlertType.INFORMATION, "Therapist Saved Successfully!").show();
-                    loadTableData();
-                    refrashPage();
-                } else {
-                    new Alert(Alert.AlertType.ERROR, "Failed to Save Therapist!").show();
-                }
+            boolean isSaved = therapistBO.saveTherapist(dto);
+            if (isSaved) {
+                new Alert(Alert.AlertType.INFORMATION, "Therapist Saved Successfully!").show();
+                loadTableData();
+                refreshPage();
             } else {
-                new Alert(Alert.AlertType.WARNING, "Please fill all the fields with valid data!").show();
+                new Alert(Alert.AlertType.ERROR, "Failed to Save Therapist!").show();
             }
-
-        } catch (NumberFormatException e) {
-            new Alert(Alert.AlertType.ERROR, "Please enter valid numeric values").show();
         } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+            new Alert(Alert.AlertType.ERROR, "Error: " + e.getMessage()).show();
         }
     }
 
-
     @FXML
     void searchOnAction(MouseEvent event) {
-        String therapistId = txtTherapistId.getText();
-
-        if (!therapistId.isEmpty()) {
-            try{
-                TherapistDTO therapistDTO = therapistBO.searchTherapist(therapistId);
-
-                if (therapistDTO !=null) {
-                    txtTherapistName.setText(therapistDTO.getName());
-                    txtTherapistContact.setText(String.valueOf(therapistDTO.getContactNumber()));
-                    txtTherapistGmail.setText(therapistDTO.getEmail());
-                    cmbSpecialization.setValue(therapistDTO.getSpecialization());
-                    cmbAssignedProgram.setValue(therapistDTO.getAssignedProgram());
-                    cmbAvailability.setValue(therapistDTO.getAvailability());
-
+        String id = txtTherapistId.getText();
+        if (!id.isEmpty()) {
+            try {
+                TherapistDTO dto = therapistBO.searchTherapist(id);
+                if (dto != null) {
+                    txtTherapistName.setText(dto.getName());
+                    txtTherapistContact.setText(String.valueOf(dto.getContactNumber()));
+                    txtTherapistGmail.setText(dto.getEmail());
+                    cmbSpecialization.setValue(dto.getSpecialization());
+                    cmbAssignedProgram.setValue(dto.getAssignedProgram());
+                    cmbAvailability.setValue(dto.getAvailability());
                 } else {
                     new Alert(Alert.AlertType.WARNING, "Therapist Not Found!").show();
                 }
-            }catch (Exception e){
-                new Alert(Alert.AlertType.ERROR, "An error occurred while searching!").show();            }
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.ERROR, "Error searching therapist!").show();
+            }
         } else {
-            new Alert(Alert.AlertType.WARNING, "Please enter a Therapist ID to search!").show();
+            new Alert(Alert.AlertType.WARNING, "Please enter a Therapist ID!").show();
         }
     }
 
     @FXML
     void updateOnAction(ActionEvent event) {
         try {
+            if (!validateInputs()) return;
 
-            String therapistId = txtTherapistId.getText();
-            String therapistName = txtTherapistName.getText();
-            String specialization = cmbSpecialization.getValue();
-            String availability = cmbAvailability.getValue();
-            int contact = Integer.parseInt(txtTherapistContact.getText());
-            String program = cmbAssignedProgram.getValue();
-            String email = txtTherapistGmail.getText();
+            TherapistDTO dto = new TherapistDTO(
+                    txtTherapistId.getText(),
+                    txtTherapistName.getText(),
+                    cmbSpecialization.getValue(),
+                    cmbAvailability.getValue(),
+                    Integer.parseInt(txtTherapistContact.getText()),
+                    cmbAssignedProgram.getValue(),
+                    txtTherapistGmail.getText()
+            );
 
-            if (!therapistId.isEmpty() && !therapistName.isEmpty() && !email.isEmpty() && specialization != null && program != null && availability != null && contact > 0) {
-
-                TherapistDTO therapistDTO = new TherapistDTO(
-                        therapistId,
-                        therapistName,
-                        specialization,
-                        availability,
-                        contact,
-                        program,
-                        email
-                );
-
-                boolean isSUpdate = therapistBO.updateTherapist(therapistDTO);
-
-                if (isSUpdate) {
-                    new Alert(Alert.AlertType.INFORMATION, "Therapist Updated Successfully!").show();
-                    loadTableData();
-                    refrashPage();
-                } else {
-                    new Alert(Alert.AlertType.ERROR, "Failed to Update Therapist!").show();
-                }
+            boolean isUpdated = therapistBO.updateTherapist(dto);
+            if (isUpdated) {
+                new Alert(Alert.AlertType.INFORMATION, "Therapist Updated Successfully!").show();
+                loadTableData();
+                refreshPage();
             } else {
-                new Alert(Alert.AlertType.WARNING, "Please fill all the fields with valid data!").show();
+                new Alert(Alert.AlertType.ERROR, "Failed to Update Therapist!").show();
             }
-
-        } catch (NumberFormatException e) {
-            new Alert(Alert.AlertType.ERROR, "Please enter valid numeric values").show();
         } catch (Exception e) {
-            new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
+            new Alert(Alert.AlertType.ERROR, "Error: " + e.getMessage()).show();
         }
     }
 
+    private boolean validateInputs() {
+        String id = txtTherapistId.getText();
+        String name = txtTherapistName.getText();
+        String email = txtTherapistGmail.getText();
+        String contact = txtTherapistContact.getText();
+
+        if (!id.matches(ID_REGEX)) {
+            new Alert(Alert.AlertType.WARNING, "Invalid Therapist ID! (e.g., T001)").show();
+            return false;
+        }
+        if (!name.matches(NAME_REGEX)) {
+            new Alert(Alert.AlertType.WARNING, "Invalid Name! Only letters allowed, 3-50 characters.").show();
+            return false;
+        }
+        if (!contact.matches(CONTACT_REGEX)) {
+            new Alert(Alert.AlertType.WARNING, "Invalid Contact Number! Must be 10 digits.").show();
+            return false;
+        }
+        if (!email.matches(GMAIL_REGEX)) {
+            new Alert(Alert.AlertType.WARNING, "Invalid Gmail Address! Must end with @gmail.com.").show();
+            return false;
+        }
+        if (cmbSpecialization.getValue() == null || cmbAssignedProgram.getValue() == null || cmbAvailability.getValue() == null) {
+            new Alert(Alert.AlertType.WARNING, "Please select Specialization, Program, and Availability!").show();
+            return false;
+        }
+        return true;
+    }
 }

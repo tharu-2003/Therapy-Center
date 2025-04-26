@@ -70,6 +70,7 @@ public class PatientController {
             throw new RuntimeException(e);
         }
     }
+
     private void loadTableData() throws Exception {
         ArrayList<PatientDTO> patientDTOS = PATIENTBO.getAllPatients();
         ObservableList<PatientTM> patientTMS = FXCollections.observableArrayList();
@@ -85,6 +86,7 @@ public class PatientController {
         }
         tblPatients.setItems(patientTMS);
     }
+
     private void visibleData() throws Exception {
         colPatientId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colName.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -110,7 +112,6 @@ public class PatientController {
                     if (isDeleted) {
                         new Alert(Alert.AlertType.INFORMATION, "Patient deleted successfully!").show();
                         loadTableData();
-//                        refrashPage();
                     } else {
                         new Alert(Alert.AlertType.ERROR, "Failed to delete the patient!").show();
                     }
@@ -128,24 +129,24 @@ public class PatientController {
     void refreshOnAction(ActionEvent event) {
         refreshTable();
     }
+
     void refreshTable() {
         txtPatientId.clear();
         txtPatientName.clear();
         txtPatientContact.clear();
         txtMedicalHistory.clear();
     }
+
     @FXML
     void saveOnAction(ActionEvent event) {
         try {
-            String patientId = txtPatientId.getText();
-            String name = txtPatientName.getText();
-            String medicalHistory = txtMedicalHistory.getText();
-            int contact = Integer.parseInt(txtPatientContact.getText());
+            if (isValidInput()) {
+                String patientId = txtPatientId.getText();
+                String name = txtPatientName.getText();
+                String medicalHistory = txtMedicalHistory.getText();
+                int contact = Integer.parseInt(txtPatientContact.getText());
 
-
-            if (!patientId.isEmpty() && !name.isEmpty() && !medicalHistory.isEmpty() && contact > 0) {
-
-                PatientDTO patientDTO = new PatientDTO(patientId, name, medicalHistory,contact);
+                PatientDTO patientDTO = new PatientDTO(patientId, name, medicalHistory, contact);
 
                 boolean isSaved = PATIENTBO.savePatient(patientDTO);
                 if (isSaved) {
@@ -155,11 +156,9 @@ public class PatientController {
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Patient!").show();
                 }
-            } else {
-                new Alert(Alert.AlertType.WARNING, "Please fill all the fields with valid data!").show();
             }
         } catch (NumberFormatException e) {
-            new Alert(Alert.AlertType.ERROR, "Please enter valid numeric values for Age and Contact Number!").show();
+            new Alert(Alert.AlertType.ERROR, "Please enter valid numeric values for Contact Number!").show();
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
@@ -174,12 +173,10 @@ public class PatientController {
                 PatientDTO patientDTO = PATIENTBO.searchPatient(patientId);
 
                 if (patientDTO != null) {
-
                     txtPatientId.setText(patientDTO.getId());
                     txtPatientName.setText(patientDTO.getName());
                     txtMedicalHistory.setText(patientDTO.getMedicalHistory());
                     txtPatientContact.setText(String.valueOf(patientDTO.getContactNumber()));
-
                 } else {
                     new Alert(Alert.AlertType.WARNING, "Patient Not Found!").show();
                 }
@@ -187,7 +184,7 @@ public class PatientController {
             } catch (Exception e) {
                 new Alert(Alert.AlertType.WARNING, "Patient Not Found!").show();
             }
-        }else {
+        } else {
             new Alert(Alert.AlertType.WARNING, "Please enter a Patient ID to search!").show();
         }
     }
@@ -207,32 +204,57 @@ public class PatientController {
     @FXML
     void updateOnAction(ActionEvent event) {
         try {
-            String patientId = txtPatientId.getText();
-            String name = txtPatientName.getText();
-            String medicalHistory = txtMedicalHistory.getText();
-            int contact = Integer.parseInt(txtPatientContact.getText());
+            if (isValidInput()) {
+                String patientId = txtPatientId.getText();
+                String name = txtPatientName.getText();
+                String medicalHistory = txtMedicalHistory.getText();
+                int contact = Integer.parseInt(txtPatientContact.getText());
 
+                PatientDTO patientDTO = new PatientDTO(patientId, name, medicalHistory, contact);
 
-            if (!patientId.isEmpty() && !name.isEmpty() && !medicalHistory.isEmpty() && contact > 0) {
-
-                PatientDTO patientDTO = new PatientDTO(patientId, name, medicalHistory,contact);
-
-                boolean isSaved = PATIENTBO.updatePatient(patientDTO);
-                if (isSaved) {
-                    new Alert(Alert.AlertType.INFORMATION, "Patient update Successfully!").show();
+                boolean isUpdated = PATIENTBO.updatePatient(patientDTO);
+                if (isUpdated) {
+                    new Alert(Alert.AlertType.INFORMATION, "Patient updated Successfully!").show();
                     loadTableData();
                     refreshTable();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to update Patient!").show();
                 }
-            } else {
-                new Alert(Alert.AlertType.WARNING, "Please fill all the fields with valid data!").show();
             }
         } catch (NumberFormatException e) {
-            new Alert(Alert.AlertType.ERROR, "Please enter valid numeric values for Age and Contact Number!").show();
+            new Alert(Alert.AlertType.ERROR, "Please enter valid numeric values for Contact Number!").show();
         } catch (Exception e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
         }
     }
 
+    // --------- Regex validation method ----------
+    private boolean isValidInput() {
+        String patientId = txtPatientId.getText();
+        String name = txtPatientName.getText();
+        String contact = txtPatientContact.getText();
+        String medicalHistory = txtMedicalHistory.getText();
+
+        String idPattern = "^(P)[0-9]{3}$"; // Example: P001
+        String namePattern = "^[A-Za-z\\s]{3,50}$"; // Only letters and spaces
+        String contactPattern = "^[0-9]{10}$"; // Exactly 10 digits
+
+        if (!patientId.matches(idPattern)) {
+            new Alert(Alert.AlertType.ERROR, "Invalid Patient ID! Format should be like P001").show();
+            return false;
+        }
+        if (!name.matches(namePattern)) {
+            new Alert(Alert.AlertType.ERROR, "Invalid Name! Only letters and spaces allowed (3-50 characters)").show();
+            return false;
+        }
+        if (!contact.matches(contactPattern)) {
+            new Alert(Alert.AlertType.ERROR, "Invalid Contact Number! It should be exactly 10 digits.").show();
+            return false;
+        }
+        if (medicalHistory.isEmpty()) {
+            new Alert(Alert.AlertType.ERROR, "Medical History cannot be empty!").show();
+            return false;
+        }
+        return true;
+    }
 }
