@@ -2,6 +2,7 @@ package com.ijse.gdse72.therapycenter.dao.custom.impl;
 
 import com.ijse.gdse72.therapycenter.config.FactoryConfiguration;
 import com.ijse.gdse72.therapycenter.dao.custom.PatientDAO;
+import com.ijse.gdse72.therapycenter.dto.PatientDTO;
 import com.ijse.gdse72.therapycenter.entity.Patient;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -110,5 +111,48 @@ public class PatientDAOImpl implements PatientDAO {
     }    @Override
     public void setSession(Session session) throws Exception {
 
+    }
+
+    @Override
+    public String getNextId() {
+        return "";
+    }
+
+    @Override
+    public PatientDTO getPatient(String patientId) {
+        Session session = FactoryConfiguration.getInstance().getSession();
+        Transaction transaction = session.beginTransaction();
+
+        try {
+
+//            Patient patient = session.createQuery("FROM Patient ORDER BY id DESC", Patient.class)
+//                    .setMaxResults(1)
+//                    .uniqueResult();
+
+
+            Patient patient = session.createQuery(
+                            "FROM Patient WHERE id = :patientId", Patient.class)
+                    .setParameter("patientId", patientId)
+                    .uniqueResult();
+
+            transaction.commit();
+            session.close();
+
+            if (patient != null) {
+                return new PatientDTO(
+                        patient.getId(),
+                        patient.getName(),
+                        patient.getMedicalHistory(),
+                        patient.getContactNumber()
+                );
+            } else {
+                return null;
+            }
+
+        } catch (Exception e) {
+            transaction.rollback();
+            session.close();
+            throw e;
+        }
     }
 }

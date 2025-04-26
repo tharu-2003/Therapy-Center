@@ -19,40 +19,56 @@
         <Pane prefHeight="750.0" prefWidth="1170.0">
             <children>
                 <Label layoutX="69.0" layoutY="129.0" prefHeight="25.0" prefWidth="174.0" text="User ID">
-                    <font><Font name="System Bold" size="15.0" /></font>
+                    <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
                 </Label>
                 <TextField fx:id="txtUserId" layoutX="234.0" layoutY="129.0" prefHeight="25.0" prefWidth="218.0" />
 
-                <Label layoutX="69.0" layoutY="179.0" prefHeight="25.0" prefWidth="174.0" text="Username">
-                    <font><Font name="System Bold" size="15.0" /></font>
+                      <Label layoutX="69.0" layoutY="179.0" prefHeight="25.0" prefWidth="174.0" text="Username">
+                    <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
                 </Label>
                 <TextField fx:id="txtUsername" layoutX="234.0" layoutY="179.0" prefHeight="25.0" prefWidth="218.0" />
 
-                <Label layoutX="69.0" layoutY="230.0" prefHeight="25.0" prefWidth="174.0" text="Password">
-                    <font><Font name="System Bold" size="15.0" /></font>
+                      <Label layoutX="555.0" layoutY="129.0" prefHeight="25.0" prefWidth="174.0" text="Password" visible="false">
+                    <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
                 </Label>
-                <PasswordField fx:id="txtPassword" layoutX="234.0" layoutY="230.0" prefHeight="25.0" prefWidth="218.0" />
+                <PasswordField fx:id="txtPassword" layoutX="720.0" layoutY="129.0" prefHeight="25.0" prefWidth="218.0" visible="false" />
 
-                <Label layoutX="69.0" layoutY="280.0" prefHeight="25.0" prefWidth="174.0" text="Role">
-                    <font><Font name="System Bold" size="15.0" /></font>
+                      <Label layoutX="69.0" layoutY="231.0" prefHeight="25.0" prefWidth="174.0" text="Role">
+                    <font>
+                  <Font name="System Bold" size="15.0" />
+               </font>
                 </Label>
-                <ComboBox fx:id="cmbUserRole" layoutX="234.0" layoutY="280.0" prefHeight="25.0" prefWidth="218.0" promptText="Select Role" />
+                <ComboBox fx:id="cmbUserRole" layoutX="234.0" layoutY="231.0" prefHeight="25.0" prefWidth="218.0" promptText="Select Role" />
 
-                <ImageView fx:id="imgSearch" fitHeight="19.0" fitWidth="19.0" layoutX="470.0" layoutY="132.0" onMouseClicked="#searchOnAction" pickOnBounds="true" preserveRatio="true">
-                    <image><Image url="@../icons/search.png" /></image>
+                      <ImageView fx:id="imgSearch" fitHeight="19.0" fitWidth="19.0" layoutX="470.0" layoutY="132.0" onMouseClicked="#searchOnAction" pickOnBounds="true" preserveRatio="true">
+                    <image>
+                  <Image url="@../icons/search.png" />
+               </image>
                 </ImageView>
 
-                <Button fx:id="btnSave" layoutX="500.0" layoutY="330.0" onAction="#saveOnAction" prefHeight="36.0" prefWidth="180.0" style="-fx-background-color: black; -fx-border-radius: 20; -fx-background-radius: 20;" text="Save" textFill="WHITE">
-                    <font><Font name="System Bold Italic" size="16.0" /></font>
+                      <Button fx:id="btnSave" layoutX="500.0" layoutY="330.0" onAction="#saveOnAction" prefHeight="36.0" prefWidth="180.0" style="-fx-background-color: black; -fx-border-radius: 20; -fx-background-radius: 20;" text="Save" textFill="WHITE" visible="false">
+                    <font>
+                  <Font name="System Bold Italic" size="16.0" />
+               </font>
                 </Button>
                 <Button fx:id="btnUpdate" layoutX="700.0" layoutY="330.0" onAction="#updateOnAction" prefHeight="36.0" prefWidth="180.0" style="-fx-background-color: black; -fx-border-radius: 20; -fx-background-radius: 20;" text="Update" textFill="WHITE">
-                    <font><Font name="System Bold Italic" size="16.0" /></font>
+                    <font>
+                  <Font name="System Bold Italic" size="16.0" />
+               </font>
                 </Button>
                 <Button fx:id="btnDelete" layoutX="900.0" layoutY="330.0" onAction="#deleteOnAction" prefHeight="36.0" prefWidth="180.0" style="-fx-background-color: black; -fx-border-radius: 20; -fx-background-radius: 20;" text="Delete" textFill="WHITE">
-                    <font><Font name="System Bold Italic" size="16.0" /></font>
+                    <font>
+                  <Font name="System Bold Italic" size="16.0" />
+               </font>
                 </Button>
 
-                <TableView fx:id="tblUsers" layoutX="44.0" layoutY="390.0" onMouseClicked="#tableClickOnAction" prefHeight="330.0" prefWidth="1082.0">
+                      <TableView fx:id="tblUsers" layoutX="44.0" layoutY="390.0" onMouseClicked="#tableClickOnAction" prefHeight="330.0" prefWidth="1082.0">
                     <columns>
                         <TableColumn fx:id="colUserId" prefWidth="232.79999923706055" text="User ID" />
                         <TableColumn fx:id="colUsername" prefWidth="218.39999389648438" text="Username" />
@@ -60,10 +76,12 @@
                     </columns>
                 </TableView>
 
-                <Label alignment="CENTER" layoutX="280.0" layoutY="30.0" prefHeight="46.0" prefWidth="612.0" text="User Role Management">
-                    <font><Font name="Palatino Linotype Bold" size="30.0" /></font>
+                      <Label alignment="CENTER" layoutX="280.0" layoutY="30.0" prefHeight="46.0" prefWidth="612.0" text="User Role Management">
+                    <font>
+                  <Font name="Palatino Linotype Bold" size="30.0" />
+               </font>
                 </Label>
-            <Button fx:id="btnRefresh" layoutX="280.0" layoutY="330.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="36.0" prefWidth="197.0" style="-fx-background-color: black; -fx-border-radius: 20; -fx-background-radius: 20;" text="Refresh" textFill="WHITE">
+            <Button fx:id="btnRefresh" layoutX="487.0" layoutY="330.0" mnemonicParsing="false" onAction="#refreshOnAction" prefHeight="36.0" prefWidth="197.0" style="-fx-background-color: black; -fx-border-radius: 20; -fx-background-radius: 20;" text="Refresh" textFill="WHITE">
                <font>
                   <Font name="System Bold Italic" size="16.0" />
                </font>

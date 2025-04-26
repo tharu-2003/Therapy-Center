@@ -52,4 +52,19 @@ public class PatientBOImpl implements PatientBO {
     public boolean deletePatient(String patientId) throws Exception {
         return patientDAO.delete(patientId);
     }
+
+    @Override
+    public PatientDTO searchPatient(String patientID) throws Exception {
+        Patient patient = patientDAO.search(patientID);
+
+        if (patient == null) {
+            return null;
+        }
+        return new PatientDTO(
+                patient.getId(),
+                patient.getName(),
+                patient.getMedicalHistory(),
+                patient.getContactNumber()
+        );
+    }
 }

@@ -27,10 +27,10 @@ public class Patient {
     @Column(nullable = false, length = 15)
     private int contactNumber;
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<TherapySession> therapySessions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Payment> payments = new ArrayList<>();
 
     public Patient(String id, String name, String medicalHistory, int contactNumber) {

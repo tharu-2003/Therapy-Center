@@ -3,13 +3,13 @@ module com.ijse.gdse72.therapycenter {
     requires javafx.fxml;
     requires static lombok;
     requires com.jfoenix;
-    requires java.prefs;
 
     requires org.hibernate.orm.core;
     requires jakarta.persistence;
     requires java.naming;
     requires jbcrypt;
     requires java.management;
+    requires java.desktop;
 
     opens com.ijse.gdse72.therapycenter.config to jakarta.persistence;
     opens com.ijse.gdse72.therapycenter.entity to org.hibernate.orm.core;

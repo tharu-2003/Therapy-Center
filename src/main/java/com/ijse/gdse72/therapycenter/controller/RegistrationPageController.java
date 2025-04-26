@@ -15,6 +15,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class RegistrationPageController {
 
@@ -72,7 +73,16 @@ public class RegistrationPageController {
     private final UserBO userBO = (UserBO) BOFactory.getInstance().getBO(BOFactory.BOType.USER);
 
     public void initialize() {
-        cmbRole.getItems().addAll("ADMIN", "RECEPTIONIST");
+        try {
+            lblUserId.setText(userBO.getNextuserId());
+
+            cmbRole.getItems().addAll("ADMIN", "RECEPTIONIST");
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @FXML

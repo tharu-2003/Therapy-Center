@@ -36,9 +36,18 @@ public class TherapyProgram {
     @Column(length = 500)
     private String description;
 
-    @OneToMany(mappedBy = "therapyProgram", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "therapyProgram", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<TherapySession> therapySessions = new ArrayList<>();
 
-    @OneToMany(mappedBy = "therapyProgram", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "therapyProgram", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Payment> payments = new ArrayList<>();
+
+    public TherapyProgram(String programId, String name, String duration, BigDecimal fee, String therapist, String description) {
+        this.programId = programId;
+        this.name = name;
+        this.duration = duration;
+        this.fee = fee;
+        this.therapist = therapist;
+        this.description = description;
+    }
 }

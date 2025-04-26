@@ -42,7 +42,7 @@
             </LinearGradient>
          </textFill>
       </Label>
-      <Pane focusTraversable="true" layoutX="600.0" opacity="0.74" prefHeight="600.0" prefWidth="350.0" style="-fx-background-color: linear-gradient(from 96.9697% 19.3182% to 100.0% 100.0%, #f7ff61 0.0%, #f2ab00 100.0%);">
+      <Pane focusTraversable="true" layoutX="600.0" opacity="0.74" prefHeight="600.0" prefWidth="350.0" style="-fx-background-color: linear-gradient(from 96.9697% 19.3182% to 100.0% 100.0%, #e0f7f1 0.0%, #5fd068 100.0%);">
          <children>
             <Pane layoutX="15.0" layoutY="275.0" opacity="0.69" prefHeight="146.0" prefWidth="321.0" style="-fx-background-color: white;">
                <children>

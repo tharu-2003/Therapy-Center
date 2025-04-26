@@ -126,9 +126,14 @@ public class PatientController {
 
     @FXML
     void refreshOnAction(ActionEvent event) {
-
+        refreshTable();
     }
-
+    void refreshTable() {
+        txtPatientId.clear();
+        txtPatientName.clear();
+        txtPatientContact.clear();
+        txtMedicalHistory.clear();
+    }
     @FXML
     void saveOnAction(ActionEvent event) {
         try {
@@ -146,7 +151,7 @@ public class PatientController {
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Patient Saved Successfully!").show();
                     loadTableData();
-//                    refrashPage();
+                    refreshTable();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to Save Patient!").show();
                 }
@@ -162,7 +167,29 @@ public class PatientController {
 
     @FXML
     void searchOnAction(MouseEvent event) {
+        String patientId = txtPatientId.getText();
 
+        if (!patientId.isEmpty()) {
+            try {
+                PatientDTO patientDTO = PATIENTBO.searchPatient(patientId);
+
+                if (patientDTO != null) {
+
+                    txtPatientId.setText(patientDTO.getId());
+                    txtPatientName.setText(patientDTO.getName());
+                    txtMedicalHistory.setText(patientDTO.getMedicalHistory());
+                    txtPatientContact.setText(String.valueOf(patientDTO.getContactNumber()));
+
+                } else {
+                    new Alert(Alert.AlertType.WARNING, "Patient Not Found!").show();
+                }
+
+            } catch (Exception e) {
+                new Alert(Alert.AlertType.WARNING, "Patient Not Found!").show();
+            }
+        }else {
+            new Alert(Alert.AlertType.WARNING, "Please enter a Patient ID to search!").show();
+        }
     }
 
     @FXML
@@ -194,7 +221,7 @@ public class PatientController {
                 if (isSaved) {
                     new Alert(Alert.AlertType.INFORMATION, "Patient update Successfully!").show();
                     loadTableData();
-//                    refrashPage();
+                    refreshTable();
                 } else {
                     new Alert(Alert.AlertType.ERROR, "Failed to update Patient!").show();
                 }

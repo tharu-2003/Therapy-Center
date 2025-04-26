@@ -6,6 +6,10 @@ import com.ijse.gdse72.therapycenter.dao.custom.UserDAO;
 import com.ijse.gdse72.therapycenter.dto.UserDTO;
 import com.ijse.gdse72.therapycenter.entity.User;
 import com.ijse.gdse72.therapycenter.util.PasswordUtil;
+import javafx.scene.control.Alert;
+
+import java.sql.SQLException;
+import java.util.ArrayList;
 
 public class UserBOImpl implements UserBO {
 
@@ -49,5 +53,79 @@ public class UserBOImpl implements UserBO {
         User user = new User(userDTO.getUserId(), userDTO.getUserName(), hashedPassword, userDTO.getRole());
         userDAO.save(user);
         return true;
+    }
+
+    @Override
+    public UserDTO searchUser(String userId) throws Exception {
+        try {
+            User user = userDAO.search(userId);
+            if (user == null) {
+                new Alert(Alert.AlertType.ERROR,"User Not Found with ID: " + userId).show();
+            }
+            return new UserDTO(
+                    user.getUserId(),
+                    user.getUserName(),
+                    user.getPassword(),
+                    user.getRole()
+            );
+        } catch (Exception e) {
+            new Alert(Alert.AlertType.ERROR,"User Not Found").show();
+            return null;
+        }
+    }
+
+    @Override
+    public boolean confirmation(String userId, String password) throws SQLException {
+        User user = null;
+        try {
+            user = userDAO.search(userId);
+            if (user != null) {
+                return PasswordUtil.checkPassword(password, user.getPassword());
+            }
+            return false;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    @Override
+    public boolean deleteUser(String userId) throws Exception {
+        return userDAO.delete(userId);
+    }
+
+    @Override
+    public boolean updateUser(UserDTO userDTO) throws Exception {
+        String hashedPassword = PasswordUtil.hashPassword(userDTO.getPassword());
+
+        User user = new User(
+                userDTO.getUserId(),
+                userDTO.getUserName(),
+                hashedPassword,
+                userDTO.getRole()
+        );
+
+        return userDAO.update(user);
+    }
+
+    @Override
+    public ArrayList<UserDTO> getAllUser() throws Exception {
+        ArrayList<UserDTO> userAccountDtos = new ArrayList<>();
+        ArrayList<User> users = (ArrayList<User>) userDAO.getAll();
+
+        for (User user : users) {
+            userAccountDtos.add(new UserDTO(
+                    user.getUserId(),
+                    user.getUserName(),
+                    user.getPassword(),
+                    user.getRole()
+            ));
+        }
+
+        return userAccountDtos;
+    }
+
+    @Override
+    public String getNextuserId() throws SQLException, ClassNotFoundException {
+        return userDAO.getNextId();
     }
 }

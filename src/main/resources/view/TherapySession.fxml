@@ -50,7 +50,7 @@
                     <font><Font name="System Bold Italic" size="16.0" /></font>
                 </Button>
 
-                <TableView fx:id="tblAppointments" layoutX="44.0" layoutY="450.0" prefHeight="280.0" prefWidth="1080.0">
+                <TableView fx:id="tblAppointments" layoutX="44.0" layoutY="450.0" onMouseClicked="#tableClickOnAction" prefHeight="280.0" prefWidth="1080.0">
                     <columns>
                         <TableColumn fx:id="colSessionId" prefWidth="112.79998397827148" text="Session ID" />
                         <TableColumn fx:id="colPatientName" prefWidth="147.20005798339844" text="Patient Name" />
